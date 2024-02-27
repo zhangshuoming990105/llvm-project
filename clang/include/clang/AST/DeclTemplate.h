@@ -739,8 +739,8 @@ class RedeclarableTemplateDecl : public TemplateDecl,
     bool IsPartial = false;
     LazySpecializationInfo(uint32_t ID, unsigned Hash = ~0U,
                            bool Partial = false)
-      : DeclID(ID), ODRHash(Hash), IsPartial(Partial) { }
-    LazySpecializationInfo() { }
+        : DeclID(ID), ODRHash(Hash), IsPartial(Partial) {}
+    LazySpecializationInfo() {}
     bool operator<(const LazySpecializationInfo &Other) const {
       return DeclID < Other.DeclID;
     }
