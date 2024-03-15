@@ -283,7 +283,9 @@ public:
 
 class CodeGenRewrite : public fir::impl::CodeGenRewriteBase<CodeGenRewrite> {
 public:
-  void runOn(mlir::Operation *op) {
+  void runOnOperation() override final {
+    mlir::ModuleOp mod = getOperation();
+
     auto &context = getContext();
     mlir::ConversionTarget target(context);
     target.addLegalDialect<mlir::arith::ArithDialect, fir::FIROpsDialect,
@@ -301,7 +303,7 @@ public:
     patterns.insert<EmboxConversion, ArrayCoorConversion, ReboxConversion,
                     DeclareOpConversion>(&context);
     if (mlir::failed(
-            mlir::applyPartialConversion(op, target, std::move(patterns)))) {
+            mlir::applyPartialConversion(mod, target, std::move(patterns)))) {
       mlir::emitError(mlir::UnknownLoc::get(&context),
                       "error in running the pre-codegen conversions");
       signalPassFailure();
@@ -309,13 +311,7 @@ public:
     }
     // Erase any residual (fir.shape, fir.slice...).
     mlir::IRRewriter rewriter(&context);
-    (void)mlir::runRegionDCE(rewriter, op->getRegions());
-  }
-
-  void runOnOperation() override final {
-    // Call runOn on all top level regions that may contain emboxOp/arrayCoorOp.
-    mlir::ModuleOp mod = getOperation();
-    runOn(mod);
+    (void)mlir::runRegionDCE(rewriter, mod->getRegions());
   }
 };
 
