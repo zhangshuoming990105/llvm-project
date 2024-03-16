@@ -55,6 +55,7 @@ private:
 _LIBCPP_HIDE_FROM_ABI inline constexpr bool operator==(const leap_second& __x, const leap_second& __y) {
   return __x.date() == __y.date();
 }
+
 _LIBCPP_HIDE_FROM_ABI inline constexpr strong_ordering operator<=>(const leap_second& __x, const leap_second& __y) {
   return __x.date() <=> __y.date();
 }
@@ -63,43 +64,56 @@ template <class _Duration>
 _LIBCPP_HIDE_FROM_ABI constexpr bool operator==(const leap_second& __x, const sys_time<_Duration>& __y) {
   return __x.date() == __y;
 }
+
 template <class _Duration>
 _LIBCPP_HIDE_FROM_ABI constexpr bool operator<(const leap_second& __x, const sys_time<_Duration>& __y) {
   return __x.date() < __y;
 }
+
 template <class _Duration>
 _LIBCPP_HIDE_FROM_ABI constexpr bool operator<(const sys_time<_Duration>& __x, const leap_second& __y) {
   return __x < __y.date();
 }
+
 template <class _Duration>
 _LIBCPP_HIDE_FROM_ABI constexpr bool operator>(const leap_second& __x, const sys_time<_Duration>& __y) {
   return __y < __x;
 }
+
 template <class _Duration>
 _LIBCPP_HIDE_FROM_ABI constexpr bool operator>(const sys_time<_Duration>& __x, const leap_second& __y) {
   return __y < __x;
 }
+
 template <class _Duration>
 _LIBCPP_HIDE_FROM_ABI constexpr bool operator<=(const leap_second& __x, const sys_time<_Duration>& __y) {
   return !(__y < __x);
 }
+
 template <class _Duration>
 _LIBCPP_HIDE_FROM_ABI constexpr bool operator<=(const sys_time<_Duration>& __x, const leap_second& __y) {
   return !(__y < __x);
 }
+
 template <class _Duration>
 _LIBCPP_HIDE_FROM_ABI constexpr bool operator>=(const leap_second& __x, const sys_time<_Duration>& __y) {
   return !(__x < __y);
 }
+
 template <class _Duration>
 _LIBCPP_HIDE_FROM_ABI constexpr bool operator>=(const sys_time<_Duration>& __x, const leap_second& __y) {
   return !(__x < __y);
 }
+
+#    ifndef _LIBCPP_COMPILER_GCC
+// This requirement cauese a compilation loop in GCC-13 and running out of memory.
+// TODO TZDB Test whether GCC-14 fixes this.
 template <class _Duration>
   requires three_way_comparable_with<sys_seconds, sys_time<_Duration>>
 _LIBCPP_HIDE_FROM_ABI constexpr auto operator<=>(const leap_second& __x, const sys_time<_Duration>& __y) {
   return __x.date() <=> __y;
 }
+#    endif
 
 } // namespace chrono
 
